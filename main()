@@ -261,9 +261,7 @@ while not gameover:
         LAVA()
         enemy()
         Draw_plaform()
-        print(can_Dash)
-        print(isOnGround)
-        print(player[0])
+        
 
 
 
