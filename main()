@@ -1,0 +1,274 @@
+import pygame
+import random
+pygame.init()
+pygame.display.set_caption("MAP")
+screen = pygame.display.set_mode((900, 750))
+clock = pygame.time.Clock()
+gameover = False
+color = (255,255,255)
+player = [210,660, 0, 0 ]# xpos, ypos, vx ,vy
+can_Dash = True
+dashDistance = 100
+dashTime = 10
+pxpos = (random.randint(4500,5000))
+pypos = (random.randint(100,500))
+offset = 0
+platforms = [(550,350),(1850,460),(1950, 460),(2050,460),(2100,460),(2150,460)]
+isOnGround = True
+ENEMY = [1500,650, 1850, 500, 2200, 400, 3000, 600, 2500, 550, 4200, 4600, 600, 400, 5000, 600, 5500, 550,  5200, 400, 6000, 550]
+lava = [668,670]
+ev = -0.4
+ey = -0.4
+state = 1
+start = False
+PLAY = pygame.image.load('PLAY_GAME.png')
+Title = pygame.image.load('TITLE.png')
+CREDITS = pygame.image.load('credits.png')
+frameWidth = 69
+frameHeight = 69
+RowNum = 2
+frameNum = 0
+ticker = 0
+xpos = 0
+ypos = 0
+mousePos = [xpos, ypos]
+PlatLength_x = (random.randint(75, 250))
+particle_v = (random.randint(-3, 3))
+Parts = [player[0], player[1]]
+
+def particles():
+    pygame.draw.rect(screen, (Parts[0], Parts[1], 1, 1))
+    pygame.draw.rect(screen, (Parts[0], Parts[1], 1, 1))
+    pygame.draw.rect(screen, (Parts[0], Parts[1], 1, 1))
+
+
+
+def Draw_plaform():
+    for i in range(len(platforms)):
+        pygame.draw.rect(screen, (250, 0, 0), (platforms[i][0] + offset, platforms[i][1], 100, 30))
+
+def LAVA():
+    for i in range(len(lava)):
+        pygame.draw.rect(screen,(175,0,0),(rect1))
+
+
+def enemy():
+        pygame.draw.rect(screen,(color1),(enemy1))
+        pygame.draw.rect(screen, (color1), (enemy2))
+        pygame.draw.rect(screen, (color1), (enemy3))
+        pygame.draw.rect(screen, (color1), (enemy4))
+
+
+
+def dash():
+    global can_Dash
+    global isOnGround
+    global offset
+    keys = pygame.key.get_pressed()
+
+    if can_Dash == True and isOnGround == True and  keys[pygame.K_d and pygame.K_LSHIFT]:
+        player[2] = 15
+        player[1] -= 10
+        isOnGround = False
+        can_Dash = False
+        offset -= 30
+    if isOnGround == False:
+        can_Dash = False
+    if can_Dash == False:
+        player[2] != 15
+
+    if isOnGround == True:
+        player[2] = 0
+        can_Dash = True
+
+    #if can_Dash == True and keys[pygame.K_a and pygame.K_LSHIFT]:
+#        player[2] = -15
+ #       can_Dash = False
+  #      offset += 30
+   # if can_Dash == False:
+    #    player[2] += 1
+
+    if isOnGround == True:
+        player[2] = 0
+
+    if player[1] >= 650:
+        isOnGround = True
+        player[1] = 650
+
+
+
+
+
+
+
+
+
+
+
+def player_move():
+    global isOnGround
+    global offset
+
+    for i in range(len(platforms)):
+        if player[0] + 50 > platforms[i][0] + offset and player[0] < platforms[i][0] + 100 + offset and player[1] + 50 > \
+            platforms[i][1] and player[1] + 50 < platforms[i][1] + 50:
+            isOnGround = True
+            player[1] - platforms[i][1] - 50
+            player[3] = 0
+        if player[0] < platforms[i][0] + offset and player[0] > platforms[i][0] + 100 + offset and player[1] + 50 :
+            isOnGround = False
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_d]:
+        if offset < -10000 and player[0] < 950:
+            player[0] += 4
+            offset -= 8
+        elif offset > 260 and player[0] < 400:
+            player[2] = 4
+        elif player[0] < 750:
+            offset -= 8
+            player[2] = 0
+
+
+    if keys[pygame.K_a]:
+        if offset > 260 and player[0] > 0:
+            player[0] -= 4
+            offset += 8
+        elif player[0] > 400 and offset < -1500:
+            offset -= 4
+            player[2] = -4
+        elif player[0] > 0:
+            offset += 8
+            player[2] = 0
+        else:
+            player[2] = 0
+
+    if isOnGround == True and keys[pygame.K_SPACE]:
+        player[3] = -25
+
+        isOnGround = False
+
+    if isOnGround == False:
+        player[3] += 1
+
+
+
+
+    if player[1] >= 650:
+        isOnGround = True
+        player[1] += 0
+
+while not gameover:
+    clock.tick(60)
+    keys = pygame.key.get_pressed()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            gameover = True
+    if keys[pygame.K_q]:
+        gameover = True
+
+
+
+    if event.type == pygame.MOUSEMOTION:
+        mousePos = event.pos
+        if 350 < mousePos[0] < 550 and 250 < mousePos[1] < 350:
+            color = ( 255, 0, 255)
+        else:
+            color = (255,255,255)
+
+
+
+
+
+    if state == 1 and 350 < mousePos[0] < 550 and 250 < mousePos[1] < 350 and event.type == pygame.MOUSEBUTTONDOWN:
+            start = True
+    else:
+        start = False
+    if state == 1 and start == True:
+        state = 2
+
+
+    #Update Section---------------------------------------------------------
+    player[0] += player[2]
+    player[1] += player[3]
+
+    Parts[0] += particle_v
+    Parts[1] += particle_v
+
+    ENEMY[0] += ev
+    ENEMY[2] += ev
+    ENEMY[4] += ev
+    ENEMY[6] += ev
+
+    player_move()
+    dash()
+    #ENEMIES ---------------------------------------------------------------------
+    rect1 = pygame.Rect(lava[0] + offset, lava[1], 500, 350).inflate(35, 35)
+    rect2 = pygame.Rect(player[0], player[1], 35, 35) # Player Rect
+    enemy1 = pygame.Rect(ENEMY[0] + offset, ENEMY[1], 45, 45).inflate(35,35) # Enemy1
+    enemy2 = pygame.Rect(ENEMY[2] + offset, ENEMY[3], 45, 45).inflate(35,35)
+    enemy3 = pygame.Rect(ENEMY[4] + offset, ENEMY[5], 45, 45).inflate(35,35)
+    enemy4 =pygame.Rect(ENEMY[6] + offset, ENEMY[7], 45, 45).inflate(35,35)
+
+
+    collide = rect1.colliderect(rect2)
+    Ecollide1 = enemy1.colliderect(rect2)
+    Ecollide2 = enemy1.colliderect(rect2)
+    Ecollide3 = enemy1.colliderect(rect2)
+    Ecollide4 = enemy1.colliderect(rect2)
+    color1 = (255, 0, 0) if collide or Ecollide1 else (255, 0, 255)
+
+    if can_Dash == False and Ecollide1:
+        color1 = (0, 0, 255)
+
+
+
+
+    if state == 1:
+
+        screen.fill((120,120,118))
+
+        screen.blit(PLAY,(275, 200,))
+        screen.blit(Title, (120, 20))
+        screen.blit(CREDITS,(200,400))
+        #pygame.draw.rect(screen,(color),(150, 50, 600, 100))
+        #pygame.draw.rect(screen,(color),(350,200,200,100))
+        #pygame.draw.rect(screen,(color),(350,400,200,100))
+
+        pygame.display.flip()
+
+    if state == 2:
+        screen.fill((0,0,0))
+
+        pygame.draw.rect(screen,(255,0,255),(player[0], player[1], 35, 40))
+
+        pygame.draw.rect(screen,(color),(0 + offset,685,400,200)) # Tall Ground
+        pygame.draw.rect(screen, (color), (550 + offset, 350, 100, 400)) # Big Ground
+        pygame.draw.rect(screen, (color), (950 + offset, 685, 700, 200)) # Big Ground
+        pygame.draw.rect(screen, (color), (1400 + offset, 0, 300, 500))  # Big Ground
+        pygame.draw.rect(screen, (color), (1850 + offset, 460, 400, 500))  # Big Ground
+        pygame.draw.rect(screen, (color), (2600 + offset, 685, 700, 200))  # Big Ground
+        pygame.draw.rect(screen, (color), (3000 + offset, 685, 600, 200))  # Big Ground
+        pygame.draw.rect(screen, (color), (4000 + offset, 685, 700, 200))  # Big Ground
+        pygame.draw.rect(screen, (color), (7500 + offset, 685, 700, 200))  # Big Ground
+
+        #random Platforms---------------------------------------------------------------
+        pygame.draw.rect(screen,(0,255,0),(pxpos + offset,pypos,PlatLength_x, 20))
+
+         # Platform
+        pygame.draw.rect(screen, (0, 255, 0), rect2, 6, 1) # Player collision
+
+        LAVA()
+        enemy()
+        Draw_plaform()
+        print(can_Dash)
+        print(isOnGround)
+        print(player[0])
+
+
+
+
+
+        pygame.display.flip()
+
+pygame.quit()
